@@ -1,0 +1,46 @@
+{
+  "name": "posthtml-svelte",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Write Svelte in your HTML",
+  "author": "Eric Liu (https://github.com/metonym)",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "develop": "tsnd --respawn src",
+    "test": "tsnd node_modules/tape/bin/tape src/**.test.ts",
+    "test:tdd": "tsnd --respawn node_modules/tape/bin/tape src/**.test.ts",
+    "prepack": "tsc"
+  },
+  "dependencies": {
+    "@rollup/plugin-node-resolve": "^7.1.3",
+    "posthtml": "^0.12.2",
+    "posthtml-parser": "^0.4.2",
+    "posthtml-render": "^1.2.2",
+    "rollup": "^2.6.1",
+    "rollup-plugin-svelte": "^5.2.1",
+    "svelte": "^3.20.1"
+  },
+  "devDependencies": {
+    "@types/tape": "^4.13.0",
+    "tape": "^4.13.2",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.8.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/metonym/posthtml-svelte.git"
+  },
+  "homepage": "https://github.com/metonym/posthtml-svelte",
+  "bugs": "https://github.com/metonym/posthtml-svelte/issues",
+  "keywords": [
+    "posthtml",
+    "posthtml plugin",
+    "plugin",
+    "svelte",
+    "rollup"
+  ],
+  "files": [
+    "lib"
+  ]
+}

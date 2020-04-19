@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  <title>Page title</title><style>h1.svelte-ohp6rh{font-size:2.5rem;color:blue}</style></head>
+  <body>
+    
+
+      <button>Increment</button>
+
+      <h1 class="svelte-ohp6rh">Count: 0</h1>
+
+      <ul>Static, pre-rendered list
+        <li>0</li><li>1</li><li>2</li></ul>
+
+      <ul>Dynamic list
+        </ul><script>function noop() { }
+function run(fn) {
+    return fn();
+}
+function blank_object() {
+    return Object.create(null);
+}
+function run_all(fns) {
+    fns.forEach(run);
+}
+function is_function(thing) {
+    return typeof thing === 'function';
+}
+function safe_not_equal(a, b) {
+    return a != a ? b == b : a !== b || ((a && typeof a === 'object') || typeof a === 'function');
+}
+
+function append(target, node) {
+    target.appendChild(node);
+}
+function insert(target, node, anchor) {
+    target.insertBefore(node, anchor || null);
+}
+function detach(node) {
+    node.parentNode.removeChild(node);
+}
+function destroy_each(iterations, detaching) {
+    for (let i = 0; i < iterations.length; i += 1) {
+        if (iterations[i])
+            iterations[i].d(detaching);
+    }
+}
+function element(name) {
+    return document.createElement(name);
+}
+function svg_element(name) {
+    return document.createElementNS('http://www.w3.org/2000/svg', name);
+}
+function text(data) {
+    return document.createTextNode(data);
+}
+function space() {
+    return text(' ');
+}
+function listen(node, event, handler, options) {
+    node.addEventListener(event, handler, options);
+    return () => node.removeEventListener(event, handler, options);
+}
+function attr(node, attribute, value) {
+    if (value == null)
+        node.removeAttribute(attribute);
+    else if (node.getAttribute(attribute) !== value)
+        node.setAttribute(attribute, value);
+}
+function children(element) {
+    return Array.from(element.childNodes);
+}
+function claim_element(nodes, name, attributes, svg) {
+    for (let i = 0; i < nodes.length; i += 1) {
+        const node = nodes[i];
+        if (node.nodeName === name) {
+            let j = 0;
+            while (j < node.attributes.length) {
+                const attribute = node.attributes[j];
+                if (attributes[attribute.name]) {
+                    j++;
+                }
+                else {
+                    node.removeAttribute(attribute.name);
+                }
+            }
+            return nodes.splice(i, 1)[0];
+        }
+    }
+    return svg ? svg_element(name) : element(name);
+}
+function claim_text(nodes, data) {
+    for (let i = 0; i < nodes.length; i += 1) {
+        const node = nodes[i];
+        if (node.nodeType === 3) {
+            node.data = '' + data;
+            return nodes.splice(i, 1)[0];
+        }
+    }
+    return text(data);
+}
+function claim_space(nodes) {
+    return claim_text(nodes, ' ');
+}
+function set_data(text, data) {
+    data = '' + data;
+    if (text.data !== data)
+        text.data = data;
+}
+function query_selector_all(selector, parent = document.body) {
+    return Array.from(parent.querySelectorAll(selector));
+}
+
+let current_component;
+function set_current_component(component) {
+    current_component = component;
+}
+
+const dirty_components = [];
+const binding_callbacks = [];
+const render_callbacks = [];
+const flush_callbacks = [];
+const resolved_promise = Promise.resolve();
+let update_scheduled = false;
+function schedule_update() {
+    if (!update_scheduled) {
+        update_scheduled = true;
+        resolved_promise.then(flush);
+    }
+}
+function add_render_callback(fn) {
+    render_callbacks.push(fn);
+}
+let flushing = false;
+const seen_callbacks = new Set();
+function flush() {
+    if (flushing)
+        return;
+    flushing = true;
+    do {
+        // first, call beforeUpdate functions
+        // and update components
+        for (let i = 0; i < dirty_components.length; i += 1) {
+            const component = dirty_components[i];
+            set_current_component(component);
+            update(component.$$);
+        }
+        dirty_components.length = 0;
+        while (binding_callbacks.length)
+            binding_callbacks.pop()();
+        // then, once components are updated, call
+        // afterUpdate functions. This may cause
+        // subsequent updates...
+        for (let i = 0; i < render_callbacks.length; i += 1) {
+            const callback = render_callbacks[i];
+            if (!seen_callbacks.has(callback)) {
+                // ...so guard against infinite loops
+                seen_callbacks.add(callback);
+                callback();
+            }
+        }
+        render_callbacks.length = 0;
+    } while (dirty_components.length);
+    while (flush_callbacks.length) {
+        flush_callbacks.pop()();
+    }
+    update_scheduled = false;
+    flushing = false;
+    seen_callbacks.clear();
+}
+function update($$) {
+    if ($$.fragment !== null) {
+        $$.update();
+        run_all($$.before_update);
+        const dirty = $$.dirty;
+        $$.dirty = [-1];
+        $$.fragment && $$.fragment.p($$.ctx, dirty);
+        $$.after_update.forEach(add_render_callback);
+    }
+}
+const outroing = new Set();
+function transition_in(block, local) {
+    if (block && block.i) {
+        outroing.delete(block);
+        block.i(local);
+    }
+}
+function mount_component(component, target, anchor) {
+    const { fragment, on_mount, on_destroy, after_update } = component.$$;
+    fragment && fragment.m(target, anchor);
+    // onMount happens before the initial afterUpdate
+    add_render_callback(() => {
+        const new_on_destroy = on_mount.map(run).filter(is_function);
+        if (on_destroy) {
+            on_destroy.push(...new_on_destroy);
+        }
+        else {
+            // Edge case - component was destroyed immediately,
+            // most likely as a result of a binding initialising
+            run_all(new_on_destroy);
+        }
+        component.$$.on_mount = [];
+    });
+    after_update.forEach(add_render_callback);
+}
+function destroy_component(component, detaching) {
+    const $$ = component.$$;
+    if ($$.fragment !== null) {
+        run_all($$.on_destroy);
+        $$.fragment && $$.fragment.d(detaching);
+        // TODO null out other refs, including component.$$ (but need to
+        // preserve final state?)
+        $$.on_destroy = $$.fragment = null;
+        $$.ctx = [];
+    }
+}
+function make_dirty(component, i) {
+    if (component.$$.dirty[0] === -1) {
+        dirty_components.push(component);
+        schedule_update();
+        component.$$.dirty.fill(0);
+    }
+    component.$$.dirty[(i / 31) | 0] |= (1 << (i % 31));
+}
+function init(component, options, instance, create_fragment, not_equal, props, dirty = [-1]) {
+    const parent_component = current_component;
+    set_current_component(component);
+    const prop_values = options.props || {};
+    const $$ = component.$$ = {
+        fragment: null,
+        ctx: null,
+        // state
+        props,
+        update: noop,
+        not_equal,
+        bound: blank_object(),
+        // lifecycle
+        on_mount: [],
+        on_destroy: [],
+        before_update: [],
+        after_update: [],
+        context: new Map(parent_component ? parent_component.$$.context : []),
+        // everything else
+        callbacks: blank_object(),
+        dirty
+    };
+    let ready = false;
+    $$.ctx = instance
+        ? instance(component, prop_values, (i, ret, ...rest) => {
+            const value = rest.length ? rest[0] : ret;
+            if ($$.ctx && not_equal($$.ctx[i], $$.ctx[i] = value)) {
+                if ($$.bound[i])
+                    $$.bound[i](value);
+                if (ready)
+                    make_dirty(component, i);
+            }
+            return ret;
+        })
+        : [];
+    $$.update();
+    ready = true;
+    run_all($$.before_update);
+    // `false` as a special case of no DOM component
+    $$.fragment = create_fragment ? create_fragment($$.ctx) : false;
+    if (options.target) {
+        if (options.hydrate) {
+            const nodes = children(options.target);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            $$.fragment && $$.fragment.l(nodes);
+            nodes.forEach(detach);
+        }
+        else {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            $$.fragment && $$.fragment.c();
+        }
+        if (options.intro)
+            transition_in(component.$$.fragment);
+        mount_component(component, options.target, options.anchor);
+        flush();
+    }
+    set_current_component(parent_component);
+}
+class SvelteComponent {
+    $destroy() {
+        destroy_component(this, 1);
+        this.$destroy = noop;
+    }
+    $on(type, callback) {
+        const callbacks = (this.$$.callbacks[type] || (this.$$.callbacks[type] = []));
+        callbacks.push(callback);
+        return () => {
+            const index = callbacks.indexOf(callback);
+            if (index !== -1)
+                callbacks.splice(index, 1);
+        };
+    }
+    $set() {
+        // overridden by instance, if it has props
+    }
+}
+
+/* .cache-posthtml-svelte/Component.svelte generated by Svelte v3.20.1 */
+
+function get_each_context(ctx, list, i) {
+	const child_ctx = ctx.slice();
+	child_ctx[3] = list[i];
+	return child_ctx;
+}
+
+function get_each_context_1(ctx, list, i) {
+	const child_ctx = ctx.slice();
+	child_ctx[3] = list[i];
+	return child_ctx;
+}
+
+// (25:8) {#each [0, 1, 2] as item}
+function create_each_block_1(ctx) {
+	let li;
+	let t;
+
+	return {
+		c() {
+			li = element("li");
+			t = text(/*item*/ ctx[3]);
+		},
+		l(nodes) {
+			li = claim_element(nodes, "LI", {});
+			var li_nodes = children(li);
+			t = claim_text(li_nodes, /*item*/ ctx[3]);
+			li_nodes.forEach(detach);
+		},
+		m(target, anchor) {
+			insert(target, li, anchor);
+			append(li, t);
+		},
+		p: noop,
+		d(detaching) {
+			if (detaching) detach(li);
+		}
+	};
+}
+
+// (32:8) {#each list as item}
+function create_each_block(ctx) {
+	let li;
+	let t_value = /*item*/ ctx[3] + "";
+	let t;
+
+	return {
+		c() {
+			li = element("li");
+			t = text(t_value);
+		},
+		l(nodes) {
+			li = claim_element(nodes, "LI", {});
+			var li_nodes = children(li);
+			t = claim_text(li_nodes, t_value);
+			li_nodes.forEach(detach);
+		},
+		m(target, anchor) {
+			insert(target, li, anchor);
+			append(li, t);
+		},
+		p(ctx, dirty) {
+			if (dirty & /*list*/ 2 && t_value !== (t_value = /*item*/ ctx[3] + "")) set_data(t, t_value);
+		},
+		d(detaching) {
+			if (detaching) detach(li);
+		}
+	};
+}
+
+function create_fragment(ctx) {
+	let t0;
+	let button;
+	let t1;
+	let t2;
+	let h1;
+	let t3;
+	let t4;
+	let t5;
+	let ul0;
+	let t6;
+	let t7;
+	let ul1;
+	let t8;
+	let dispose;
+	let each_value_1 = [0, 1, 2];
+	let each_blocks_1 = [];
+
+	for (let i = 0; i < 3; i += 1) {
+		each_blocks_1[i] = create_each_block_1(get_each_context_1(ctx, each_value_1, i));
+	}
+
+	let each_value = /*list*/ ctx[1];
+	let each_blocks = [];
+
+	for (let i = 0; i < each_value.length; i += 1) {
+		each_blocks[i] = create_each_block(get_each_context(ctx, each_value, i));
+	}
+
+	return {
+		c() {
+			t0 = space();
+			button = element("button");
+			t1 = text("Increment");
+			t2 = space();
+			h1 = element("h1");
+			t3 = text("Count: ");
+			t4 = text(/*count*/ ctx[0]);
+			t5 = space();
+			ul0 = element("ul");
+			t6 = text("Static, pre-rendered list\n        ");
+
+			for (let i = 0; i < 3; i += 1) {
+				each_blocks_1[i].c();
+			}
+
+			t7 = space();
+			ul1 = element("ul");
+			t8 = text("Dynamic list\n        ");
+
+			for (let i = 0; i < each_blocks.length; i += 1) {
+				each_blocks[i].c();
+			}
+
+			this.h();
+		},
+		l(nodes) {
+			const head_nodes = query_selector_all("[data-svelte=\"svelte-1gnwn0a\"]", document.head);
+			head_nodes.forEach(detach);
+			t0 = claim_space(nodes);
+			button = claim_element(nodes, "BUTTON", {});
+			var button_nodes = children(button);
+			t1 = claim_text(button_nodes, "Increment");
+			button_nodes.forEach(detach);
+			t2 = claim_space(nodes);
+			h1 = claim_element(nodes, "H1", { class: true });
+			var h1_nodes = children(h1);
+			t3 = claim_text(h1_nodes, "Count: ");
+			t4 = claim_text(h1_nodes, /*count*/ ctx[0]);
+			h1_nodes.forEach(detach);
+			t5 = claim_space(nodes);
+			ul0 = claim_element(nodes, "UL", {});
+			var ul0_nodes = children(ul0);
+			t6 = claim_text(ul0_nodes, "Static, pre-rendered list\n        ");
+
+			for (let i = 0; i < 3; i += 1) {
+				each_blocks_1[i].l(ul0_nodes);
+			}
+
+			ul0_nodes.forEach(detach);
+			t7 = claim_space(nodes);
+			ul1 = claim_element(nodes, "UL", {});
+			var ul1_nodes = children(ul1);
+			t8 = claim_text(ul1_nodes, "Dynamic list\n        ");
+
+			for (let i = 0; i < each_blocks.length; i += 1) {
+				each_blocks[i].l(ul1_nodes);
+			}
+
+			ul1_nodes.forEach(detach);
+			this.h();
+		},
+		h() {
+			document.title = "Page title";
+			attr(h1, "class", "svelte-ohp6rh");
+		},
+		m(target, anchor, remount) {
+			insert(target, t0, anchor);
+			insert(target, button, anchor);
+			append(button, t1);
+			insert(target, t2, anchor);
+			insert(target, h1, anchor);
+			append(h1, t3);
+			append(h1, t4);
+			insert(target, t5, anchor);
+			insert(target, ul0, anchor);
+			append(ul0, t6);
+
+			for (let i = 0; i < 3; i += 1) {
+				each_blocks_1[i].m(ul0, null);
+			}
+
+			insert(target, t7, anchor);
+			insert(target, ul1, anchor);
+			append(ul1, t8);
+
+			for (let i = 0; i < each_blocks.length; i += 1) {
+				each_blocks[i].m(ul1, null);
+			}
+
+			if (remount) dispose();
+			dispose = listen(button, "click", /*click_handler*/ ctx[2]);
+		},
+		p(ctx, [dirty]) {
+			if (dirty & /*count*/ 1) set_data(t4, /*count*/ ctx[0]);
+
+			if (dirty & /*list*/ 2) {
+				each_value = /*list*/ ctx[1];
+				let i;
+
+				for (i = 0; i < each_value.length; i += 1) {
+					const child_ctx = get_each_context(ctx, each_value, i);
+
+					if (each_blocks[i]) {
+						each_blocks[i].p(child_ctx, dirty);
+					} else {
+						each_blocks[i] = create_each_block(child_ctx);
+						each_blocks[i].c();
+						each_blocks[i].m(ul1, null);
+					}
+				}
+
+				for (; i < each_blocks.length; i += 1) {
+					each_blocks[i].d(1);
+				}
+
+				each_blocks.length = each_value.length;
+			}
+		},
+		i: noop,
+		o: noop,
+		d(detaching) {
+			if (detaching) detach(t0);
+			if (detaching) detach(button);
+			if (detaching) detach(t2);
+			if (detaching) detach(h1);
+			if (detaching) detach(t5);
+			if (detaching) detach(ul0);
+			destroy_each(each_blocks_1, detaching);
+			if (detaching) detach(t7);
+			if (detaching) detach(ul1);
+			destroy_each(each_blocks, detaching);
+			dispose();
+		}
+	};
+}
+
+function instance($$self, $$props, $$invalidate) {
+	let count = 0;
+
+	const click_handler = () => {
+		$$invalidate(0, count++, count);
+	};
+
+	let list;
+
+	$$self.$$.update = () => {
+		if ($$self.$$.dirty & /*count*/ 1) {
+			 $$invalidate(1, list = Array.from({ length: count }, (_, i) => i));
+		}
+	};
+
+	return [count, list, click_handler];
+}
+
+class Component extends SvelteComponent {
+	constructor(options) {
+		super();
+		init(this, options, instance, create_fragment, safe_not_equal, {});
+	}
+}
+
+new Component({ target: document.body, hydrate: true });
+</script>
+  </body>
+</html>

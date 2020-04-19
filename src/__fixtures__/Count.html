@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <svelte>
+      <script>
+        let count = 0;
+
+        $: list = Array.from({ length: count }, (_, i) => i)
+      </script>
+
+      <style>
+        h1 {
+          font-size: 2.5rem;
+          color: blue;
+        }
+      </style>
+
+      <svelte:head>
+        <title>Page title</title>
+      </svelte:head>
+
+      <button on:click="{() => { count++; }}">Increment</button>
+
+      <h1>Count: {count}</h1>
+
+      <ul>
+        Static, pre-rendered list
+        {#each [0, 1, 2] as item}
+          <li>{item}</li>
+        {/each}
+      </ul>
+
+      <ul>
+        Dynamic list
+        {#each list as item}
+          <li>{item}</li>
+        {/each}
+      </ul>
+    </svelte>
+  </body>
+</html>
