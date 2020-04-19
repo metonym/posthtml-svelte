@@ -19,10 +19,12 @@
     "posthtml-render": "^1.2.2",
     "rollup": "^2.6.1",
     "rollup-plugin-svelte": "^5.2.1",
-    "svelte": "^3.20.1"
+    "svelte": "^3.20.1",
+    "terser": "^4.6.11"
   },
   "devDependencies": {
     "@types/tape": "^4.13.0",
+    "htmlnano": "^0.2.5",
     "tape": "^4.13.2",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.8.3"
