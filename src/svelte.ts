@@ -7,8 +7,6 @@ import nodeResolve from "@rollup/plugin-node-resolve";
 import rollupSvelte from "rollup-plugin-svelte";
 import path from "path";
 import fs from "fs";
-import { createHash } from "crypto";
-import terser from "terser";
 
 const cache = path.join(process.cwd(), ".cache-posthtml-svelte");
 
@@ -69,11 +67,21 @@ function plugin(out?: string) {
           let fileSrc = "";
 
           if (out) {
-            fileHash = createHash("md5")
+            const crypto = await import("crypto");
+            fileHash = crypto
+              .createHash("md5")
               .update(source)
               .digest("hex")
               .slice(0, 12);
             fileSrc = `src.${fileHash}.js`;
+
+            const terser = await import("terser");
+
+            fs.writeFile(
+              path.join(out, fileSrc),
+              terser.minify(output.output[0].code).code,
+              () => {}
+            );
           }
 
           tree.match({ tag: "svelte" }, (node) => {
@@ -89,14 +97,6 @@ function plugin(out?: string) {
 
             return (node.content as unknown) as PostHTML.Node;
           });
-
-          if (out) {
-            fs.writeFile(
-              path.join(out, fileSrc),
-              terser.minify(output.output[0].code).code,
-              () => {}
-            );
-          }
 
           resolve();
         });
