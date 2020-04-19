@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support sourcemaps
 
-- Optimize generated CSS selector names
+## [0.2.0](https://github.com/metonym/posthtml-svelte/releases/tag/0.2.0) - 2020-04-19
+
+- Support separating JS from processed HTML
 
 ## [0.1.0](https://github.com/metonym/posthtml-svelte/releases/tag/0.1.0) - 2020-04-18
 
