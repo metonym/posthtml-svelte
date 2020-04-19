@@ -63,17 +63,16 @@ function plugin(out?: string) {
 
           const output = await bundle.generate({});
 
-          let fileHash = "";
           let fileSrc = "";
 
           if (out) {
             const crypto = await import("crypto");
-            fileHash = crypto
+
+            fileSrc = `src.${crypto
               .createHash("md5")
               .update(source)
               .digest("hex")
-              .slice(0, 12);
-            fileSrc = `src.${fileHash}.js`;
+              .slice(0, 12)}.js`;
 
             const terser = await import("terser");
 
