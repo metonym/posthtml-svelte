@@ -5,6 +5,7 @@
   </head>
   <body>
     <svelte>
+      <svelte:options immutable></svelte:options>
       <script>
         let count = 0;
 
@@ -15,6 +16,14 @@
         h1 {
           font-size: 2.5rem;
           color: blue;
+        }
+
+        ul {
+          list-style: none;
+        }
+
+        li {
+          font-size: .875rem;
         }
       </style>
 

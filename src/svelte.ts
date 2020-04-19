@@ -10,7 +10,7 @@ import fs from "fs";
 
 const cache = path.join(process.cwd(), ".cache-posthtml-svelte");
 
-function plugin() {
+function plugin(out?: string) {
   return (tree: PostHTML.Node) => {
     return new Promise(async (resolve) => {
       let promise: undefined | Promise<void>;
@@ -63,9 +63,35 @@ function plugin() {
 
           const output = await bundle.generate({});
 
+          let fileSrc = "";
+
+          if (out) {
+            const crypto = await import("crypto");
+
+            fileSrc = `src.${crypto
+              .createHash("md5")
+              .update(source)
+              .digest("hex")
+              .slice(0, 12)}.js`;
+
+            const terser = await import("terser");
+
+            fs.writeFile(
+              path.join(out, fileSrc),
+              terser.minify(output.output[0].code).code,
+              () => {}
+            );
+          }
+
           tree.match({ tag: "svelte" }, (node) => {
+            let script = `<script>${output.output[0].code}</script>`;
+
+            if (out) {
+              script = `<script src="${fileSrc}"></script>`;
+            }
+
             node.content = (parse(
-              `${html}<script>${output.output[0].code}</script>`
+              `${html}${script}`
             ) as unknown) as PostHTML.Node[];
 
             return (node.content as unknown) as PostHTML.Node;

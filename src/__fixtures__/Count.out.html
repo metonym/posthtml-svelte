@@ -2,18 +2,23 @@
 <html>
   <head>
     <meta charset="utf-8">
-  <title>Page title</title><style>h1.svelte-ohp6rh{font-size:2.5rem;color:blue}</style></head>
+  <title>Page title</title><style>h1.svelte-1pbrb68{font-size:2.5rem;color:blue}ul.svelte-1pbrb68{list-style:none}li.svelte-1pbrb68{font-size:.875rem}</style></head>
   <body>
     
+      
+
+      
+
+      
 
       <button>Increment</button>
 
-      <h1 class="svelte-ohp6rh">Count: 0</h1>
+      <h1 class="svelte-1pbrb68">Count: 0</h1>
 
-      <ul>Static, pre-rendered list
-        <li>0</li><li>1</li><li>2</li></ul>
+      <ul class="svelte-1pbrb68">Static, pre-rendered list
+        <li class="svelte-1pbrb68">0</li><li class="svelte-1pbrb68">1</li><li class="svelte-1pbrb68">2</li></ul>
 
-      <ul>Dynamic list
+      <ul class="svelte-1pbrb68">Dynamic list
         </ul><script>function noop() { }
 function run(fn) {
     return fn();
@@ -27,8 +32,8 @@ function run_all(fns) {
 function is_function(thing) {
     return typeof thing === 'function';
 }
-function safe_not_equal(a, b) {
-    return a != a ? b == b : a !== b || ((a && typeof a === 'object') || typeof a === 'function');
+function not_equal(a, b) {
+    return a != a ? b == b : a !== b;
 }
 
 function append(target, node) {
@@ -314,7 +319,7 @@ function get_each_context_1(ctx, list, i) {
 	return child_ctx;
 }
 
-// (25:8) {#each [0, 1, 2] as item}
+// (34:8) {#each [0, 1, 2] as item}
 function create_each_block_1(ctx) {
 	let li;
 	let t;
@@ -323,12 +328,17 @@ function create_each_block_1(ctx) {
 		c() {
 			li = element("li");
 			t = text(/*item*/ ctx[3]);
+			this.h();
 		},
 		l(nodes) {
-			li = claim_element(nodes, "LI", {});
+			li = claim_element(nodes, "LI", { class: true });
 			var li_nodes = children(li);
 			t = claim_text(li_nodes, /*item*/ ctx[3]);
 			li_nodes.forEach(detach);
+			this.h();
+		},
+		h() {
+			attr(li, "class", "svelte-1pbrb68");
 		},
 		m(target, anchor) {
 			insert(target, li, anchor);
@@ -341,7 +351,7 @@ function create_each_block_1(ctx) {
 	};
 }
 
-// (32:8) {#each list as item}
+// (41:8) {#each list as item}
 function create_each_block(ctx) {
 	let li;
 	let t_value = /*item*/ ctx[3] + "";
@@ -351,12 +361,17 @@ function create_each_block(ctx) {
 		c() {
 			li = element("li");
 			t = text(t_value);
+			this.h();
 		},
 		l(nodes) {
-			li = claim_element(nodes, "LI", {});
+			li = claim_element(nodes, "LI", { class: true });
 			var li_nodes = children(li);
 			t = claim_text(li_nodes, t_value);
 			li_nodes.forEach(detach);
+			this.h();
+		},
+		h() {
+			attr(li, "class", "svelte-1pbrb68");
 		},
 		m(target, anchor) {
 			insert(target, li, anchor);
@@ -442,7 +457,7 @@ function create_fragment(ctx) {
 			t4 = claim_text(h1_nodes, /*count*/ ctx[0]);
 			h1_nodes.forEach(detach);
 			t5 = claim_space(nodes);
-			ul0 = claim_element(nodes, "UL", {});
+			ul0 = claim_element(nodes, "UL", { class: true });
 			var ul0_nodes = children(ul0);
 			t6 = claim_text(ul0_nodes, "Static, pre-rendered list\n        ");
 
@@ -452,7 +467,7 @@ function create_fragment(ctx) {
 
 			ul0_nodes.forEach(detach);
 			t7 = claim_space(nodes);
-			ul1 = claim_element(nodes, "UL", {});
+			ul1 = claim_element(nodes, "UL", { class: true });
 			var ul1_nodes = children(ul1);
 			t8 = claim_text(ul1_nodes, "Dynamic list\n        ");
 
@@ -465,7 +480,9 @@ function create_fragment(ctx) {
 		},
 		h() {
 			document.title = "Page title";
-			attr(h1, "class", "svelte-ohp6rh");
+			attr(h1, "class", "svelte-1pbrb68");
+			attr(ul0, "class", "svelte-1pbrb68");
+			attr(ul1, "class", "svelte-1pbrb68");
 		},
 		m(target, anchor, remount) {
 			insert(target, t0, anchor);
@@ -559,7 +576,7 @@ function instance($$self, $$props, $$invalidate) {
 class Component extends SvelteComponent {
 	constructor(options) {
 		super();
-		init(this, options, instance, create_fragment, safe_not_equal, {});
+		init(this, options, instance, create_fragment, not_equal, {});
 	}
 }
 

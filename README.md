@@ -91,6 +91,10 @@ npm i -D posthtml-svelte
 
 ## Usage
 
+### Single file
+
+By default, the bundled JavaScript is injected into the HTML. This is not ideal for caching.
+
 ```js
 const fs = require("fs");
 const posthtml = require("posthtml");
@@ -110,6 +114,25 @@ You can add this to your `.gitignore`:
 
 ```s
 /.cache*
+```
+
+### Separate JS file
+
+To separate the JS file bundled from the Svelte code, specify the folder for the JS file.
+
+[Example output: src/__fixtures__/separate](src/__fixtures__/separate)
+
+```js
+const fs = require("fs");
+const posthtml = require("posthtml");
+const { svelte } = require("posthtml-svelte");
+
+(async () => {
+  const html = fs.readFileSync("./before.html");
+  const result = await posthtml([svelte("dist")]).process(html);
+
+  fs.writeFileSync("./dist/after.html", result.html);
+})();
 ```
 
 ## License
