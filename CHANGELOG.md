@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Forward options to `rollup-plugin-svelte`
 
-- Customize Component target
+- Customize Component target (default is `document.body`, use parent tag?)
 
 - Support sourcemaps
+
+- If no JavaScript, don't attach script
 
 ## [0.2.1](https://github.com/metonym/posthtml-svelte/releases/tag/0.2.1) - 2020-04-28
 
