@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-  <title>Page title</title><style>h1.svelte-1pbrb68{font-size:2.5rem;color:blue}ul.svelte-1pbrb68{list-style:none}li.svelte-1pbrb68{font-size:.875rem}</style></head>
+  <title>Page title</title><style>h1.svelte-w1q41y{font-size:2.5rem;color:blue}ul.svelte-w1q41y{list-style:none}li.svelte-w1q41y{font-size:0.875rem}</style></head>
   <body>
     
       
@@ -13,13 +13,11 @@
 
       <button>Increment</button>
 
-      <h1 class="svelte-1pbrb68">Count: 0</h1>
+      <h1 class="svelte-w1q41y">Count: 0</h1>
 
-      <ul class="svelte-1pbrb68">Static, pre-rendered list
-        <li class="svelte-1pbrb68">0</li><li class="svelte-1pbrb68">1</li><li class="svelte-1pbrb68">2</li></ul>
+      <ul class="svelte-w1q41y">Static, pre-rendered list <li class="svelte-w1q41y">0</li><li class="svelte-w1q41y">1</li><li class="svelte-w1q41y">2</li></ul>
 
-      <ul class="svelte-1pbrb68">Dynamic list
-        </ul><script>function noop() { }
+      <ul class="svelte-w1q41y">Dynamic list </ul><script>function noop() { }
 function run(fn) {
     return fn();
 }
@@ -319,7 +317,7 @@ function get_each_context_1(ctx, list, i) {
 	return child_ctx;
 }
 
-// (34:8) {#each [0, 1, 2] as item}
+// (33:34) {#each [0, 1, 2] as item}
 function create_each_block_1(ctx) {
 	let li;
 	let t;
@@ -338,7 +336,7 @@ function create_each_block_1(ctx) {
 			this.h();
 		},
 		h() {
-			attr(li, "class", "svelte-1pbrb68");
+			attr(li, "class", "svelte-w1q41y");
 		},
 		m(target, anchor) {
 			insert(target, li, anchor);
@@ -351,7 +349,7 @@ function create_each_block_1(ctx) {
 	};
 }
 
-// (41:8) {#each list as item}
+// (39:21) {#each list as item}
 function create_each_block(ctx) {
 	let li;
 	let t_value = /*item*/ ctx[3] + "";
@@ -371,7 +369,7 @@ function create_each_block(ctx) {
 			this.h();
 		},
 		h() {
-			attr(li, "class", "svelte-1pbrb68");
+			attr(li, "class", "svelte-w1q41y");
 		},
 		m(target, anchor) {
 			insert(target, li, anchor);
@@ -426,7 +424,7 @@ function create_fragment(ctx) {
 			t4 = text(/*count*/ ctx[0]);
 			t5 = space();
 			ul0 = element("ul");
-			t6 = text("Static, pre-rendered list\n        ");
+			t6 = text("Static, pre-rendered list ");
 
 			for (let i = 0; i < 3; i += 1) {
 				each_blocks_1[i].c();
@@ -434,7 +432,7 @@ function create_fragment(ctx) {
 
 			t7 = space();
 			ul1 = element("ul");
-			t8 = text("Dynamic list\n        ");
+			t8 = text("Dynamic list ");
 
 			for (let i = 0; i < each_blocks.length; i += 1) {
 				each_blocks[i].c();
@@ -459,7 +457,7 @@ function create_fragment(ctx) {
 			t5 = claim_space(nodes);
 			ul0 = claim_element(nodes, "UL", { class: true });
 			var ul0_nodes = children(ul0);
-			t6 = claim_text(ul0_nodes, "Static, pre-rendered list\n        ");
+			t6 = claim_text(ul0_nodes, "Static, pre-rendered list ");
 
 			for (let i = 0; i < 3; i += 1) {
 				each_blocks_1[i].l(ul0_nodes);
@@ -469,7 +467,7 @@ function create_fragment(ctx) {
 			t7 = claim_space(nodes);
 			ul1 = claim_element(nodes, "UL", { class: true });
 			var ul1_nodes = children(ul1);
-			t8 = claim_text(ul1_nodes, "Dynamic list\n        ");
+			t8 = claim_text(ul1_nodes, "Dynamic list ");
 
 			for (let i = 0; i < each_blocks.length; i += 1) {
 				each_blocks[i].l(ul1_nodes);
@@ -480,9 +478,9 @@ function create_fragment(ctx) {
 		},
 		h() {
 			document.title = "Page title";
-			attr(h1, "class", "svelte-1pbrb68");
-			attr(ul0, "class", "svelte-1pbrb68");
-			attr(ul1, "class", "svelte-1pbrb68");
+			attr(h1, "class", "svelte-w1q41y");
+			attr(ul0, "class", "svelte-w1q41y");
+			attr(ul1, "class", "svelte-w1q41y");
 		},
 		m(target, anchor, remount) {
 			insert(target, t0, anchor);

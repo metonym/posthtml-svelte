@@ -9,7 +9,7 @@
       <script>
         let count = 0;
 
-        $: list = Array.from({ length: count }, (_, i) => i)
+        $: list = Array.from({ length: count }, (_, i) => i);
       </script>
 
       <style>
@@ -23,7 +23,7 @@
         }
 
         li {
-          font-size: .875rem;
+          font-size: 0.875rem;
         }
       </style>
 
@@ -36,16 +36,14 @@
       <h1>Count: {count}</h1>
 
       <ul>
-        Static, pre-rendered list
-        {#each [0, 1, 2] as item}
-          <li>{item}</li>
+        Static, pre-rendered list {#each [0, 1, 2] as item}
+        <li>{item}</li>
         {/each}
       </ul>
 
       <ul>
-        Dynamic list
-        {#each list as item}
-          <li>{item}</li>
+        Dynamic list {#each list as item}
+        <li>{item}</li>
         {/each}
       </ul>
     </svelte>

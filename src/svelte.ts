@@ -7,6 +7,7 @@ import nodeResolve from "@rollup/plugin-node-resolve";
 import rollupSvelte from "rollup-plugin-svelte";
 import path from "path";
 import fs from "fs";
+import vm from "vm";
 
 const cache = path.join(process.cwd(), ".cache-posthtml-svelte");
 
@@ -19,15 +20,15 @@ function plugin(out?: string) {
         promise = new Promise(async (resolve) => {
           const source = render(node.content);
           const { js } = compile(source, { format: "cjs", generate: "ssr" });
-          const Component = eval(js.code);
+          const Component = vm.runInNewContext(js.code, { require, exports });
           const { html, head, css } = Component.render();
 
           tree.match({ tag: "head" }, (node) => {
-            if (!!Boolean(head)) {
+            if (Boolean(head)) {
               node.content?.push((parse(head!) as unknown) as PostHTML.Node);
             }
 
-            if (!!Boolean(css.code)) {
+            if (Boolean(css.code)) {
               node.content?.push(
                 (parse(
                   `<style>${css.code}</style>`
