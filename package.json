@@ -1,6 +1,6 @@
 {
   "name": "posthtml-svelte",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "description": "Write Svelte in your HTML",
   "author": "Eric Liu (https://github.com/metonym)",
