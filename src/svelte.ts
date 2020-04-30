@@ -1,26 +1,53 @@
 import { PostHTML } from "posthtml";
 import render from "posthtml-render";
 import parse from "posthtml-parser";
-import { compile } from "svelte/compiler";
 import * as rollup from "rollup";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import rollupSvelte from "rollup-plugin-svelte";
+import virtual from "@rollup/plugin-virtual";
 import path from "path";
 import fs from "fs";
-import vm from "vm";
+import "svelte/register";
 
-const cache = path.join(process.cwd(), ".cache-posthtml-svelte");
+const cache = path.join(__dirname, ".cache");
 
-function plugin(out?: string) {
+if (!fs.existsSync(cache)) {
+  fs.mkdirSync(cache);
+}
+
+function plugin(opts?: { out?: string; currentDir: string }) {
   return (tree: PostHTML.Node) => {
     return new Promise(async (resolve) => {
       let promise: undefined | Promise<void>;
 
       tree.match({ tag: "svelte" }, (node) => {
         promise = new Promise(async (resolve) => {
-          const source = render(node.content);
-          const { js } = compile(source, { format: "cjs", generate: "ssr" });
-          const Component = vm.runInNewContext(js.code, { require, exports });
+          let source = render(node.content);
+
+          // TODO: [refactor] use svelte compiler to walk and replace paths
+          let imports: null | string[] = source.match(
+            /(["'])(?:(?=(\\?))\2.)*?\1/g
+          );
+
+          if (imports && opts?.currentDir) {
+            imports
+              .map((_) => _.substr(1, _.length - 1))
+              .forEach((partial) => {
+                const { dir } = path.parse(partial);
+                const resolved = path.resolve(
+                  process.cwd(),
+                  opts.currentDir,
+                  dir
+                );
+                source = source.replace(dir, resolved);
+              });
+          }
+
+          const pathToSvelteFile = path.resolve(cache, "Component.svelte");
+
+          fs.writeFileSync(pathToSvelteFile, source);
+
+          const Component = require(pathToSvelteFile).default;
           const { html, head, css } = Component.render();
 
           tree.match({ tag: "head" }, (node) => {
@@ -39,21 +66,14 @@ function plugin(out?: string) {
             return node;
           });
 
-          if (!fs.existsSync(cache)) {
-            fs.mkdirSync(cache);
-          }
-
-          fs.writeFileSync(
-            path.join(cache, "entry.js"),
-            `import Component from "./Component.svelte";
-             new Component({ target: document.body, hydrate: true });`
-          );
-
-          fs.writeFileSync(path.join(cache, "Component.svelte"), source);
-
           const bundle = await rollup.rollup({
-            input: path.join(cache, "entry.js"),
+            input: "entry",
             plugins: [
+              virtual({
+                entry: `
+                  import Component from "${pathToSvelteFile}";
+                  new Component({ target: document.body, hydrate: true });`,
+              }),
               rollupSvelte({
                 css: false, // omit css from bundle because it's injected in the <head> element
                 hydratable: true,
@@ -66,7 +86,7 @@ function plugin(out?: string) {
 
           let fileSrc = "";
 
-          if (out) {
+          if (opts?.out) {
             const crypto = await import("crypto");
 
             fileSrc = `src.${crypto
@@ -78,16 +98,18 @@ function plugin(out?: string) {
             const terser = await import("terser");
 
             fs.writeFile(
-              path.join(out, fileSrc),
+              path.join(opts?.out, fileSrc),
               terser.minify(output.output[0].code).code,
               () => {}
             );
           }
 
           tree.match({ tag: "svelte" }, (node) => {
+            // TODO: only attach JS if required (use AST to check vars)
+
             let script = `<script>${output.output[0].code}</script>`;
 
-            if (out) {
+            if (opts?.out) {
               script = `<script src="${fileSrc}"></script>`;
             }
 
