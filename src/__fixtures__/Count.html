@@ -4,10 +4,13 @@
     <meta charset="utf-8" />
   </head>
   <body>
+    <!-- <svelte href="./Header" /> -->
     <svelte>
       <svelte:options immutable></svelte:options>
       <script>
         let count = 0;
+
+        import Header from "./Header.svelte";
 
         $: list = Array.from({ length: count }, (_, i) => i);
       </script>
@@ -28,8 +31,10 @@
       </style>
 
       <svelte:head>
-        <title>Page title</title>
+        <title>Page title2</title>
       </svelte:head>
+
+      <Header />
 
       <button on:click="{() => { count++; }}">Increment</button>
 

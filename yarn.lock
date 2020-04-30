@@ -13,6 +13,11 @@
     is-module "^1.0.0"
     resolve "^1.14.2"
 
+"@rollup/plugin-virtual@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@rollup/plugin-virtual/-/plugin-virtual-2.0.1.tgz#5e899513cd659aa9cbe182b6e621418a869648f5"
+  integrity sha512-p1OmbadojpfF1olZ0YS0SQE256+0eiTTJYeBURtsWuahTRcNpjLELvI87cwx1gOe4OwVUom+Mvl9tiUy5T2p2Q==
+
 "@rollup/pluginutils@^3.0.8":
   version "3.0.9"
   resolved "https://registry.yarnpkg.com/@rollup/pluginutils/-/pluginutils-3.0.9.tgz#aa6adca2c45e5a1b950103a999e3cddfe49fd775"
