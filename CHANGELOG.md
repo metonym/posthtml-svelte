@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - If no JavaScript, don't attach script
 
+## [0.3.0](https://github.com/metonym/posthtml-svelte/releases/tag/0.3.0) - 2020-05-01
+
+- Resolve local paths to Svelte components
+
+- Use `@rollup/plugin-virtual` for a virtual bundle entry
+
 ## [0.2.1](https://github.com/metonym/posthtml-svelte/releases/tag/0.2.1) - 2020-04-28
 
 - Replace `eval` with `vm.runInNewContext`
