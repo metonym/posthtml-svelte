@@ -112,23 +112,26 @@ function plugin(opts?: { out?: string; currentDir: string }) {
             }
           }
 
-          tree.match({ tag: "svelte" }, (node) => {
-            let script = "";
-
-            if (hasScript) {
-              script = `<script>${output.output[0].code}</script>`;
+          if (hasScript) {
+            tree.match({ tag: "svelte" }, (node) => {
+              let script = `<script>${output.output[0].code}</script>`;
 
               if (opts?.out) {
                 script = `<script src="${fileSrc}"></script>`;
               }
-            }
 
-            node.content = (parse(
-              `${html}${script}`
-            ) as unknown) as PostHTML.Node[];
+              node.content = (parse(
+                `${html}${script}`
+              ) as unknown) as PostHTML.Node[];
 
-            return (node.content as unknown) as PostHTML.Node;
-          });
+              return (node.content as unknown) as PostHTML.Node;
+            });
+          } else {
+            tree.match({ tag: "body" }, (node) => {
+              node.content = (parse(html) as unknown) as PostHTML.Node[];
+              return (node.content as unknown) as PostHTML.Node;
+            });
+          }
 
           resolve();
         });
