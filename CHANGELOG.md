@@ -13,7 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support sourcemaps
 
-- If no JavaScript, don't attach script
+- Use AST to deduce if component is "static" instead of script check
+
+- Use AST to replace imports instead of RegEx
+
+## [0.4.0](https://github.com/metonym/posthtml-svelte/releases/tag/0.4.0) - 2020-05-01
+
+- Perform simple script check (TODO: use Svelte compiler for a more realistic check)
 
 ## [0.3.0](https://github.com/metonym/posthtml-svelte/releases/tag/0.3.0) - 2020-05-01
 

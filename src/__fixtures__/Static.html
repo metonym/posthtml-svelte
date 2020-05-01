@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <!-- <svelte href="./Header" /> -->
+    <svelte>
+      <style>
+        h1 {
+          font-size: 2.5rem;
+          color: blue;
+        }
+
+        ul {
+          list-style: none;
+        }
+
+        li {
+          font-size: 0.875rem;
+          color: red;
+        }
+      </style>
+
+      <svelte:head>
+        <title>Page title2</title>
+      </svelte:head>
+
+      <ul>
+        Static, pre-rendered list {#each [0, 1, 2] as item}
+        <li>{item}</li>
+        {/each}
+      </ul>
+    </svelte>
+  </body>
+</html>

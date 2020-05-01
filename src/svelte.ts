@@ -24,6 +24,11 @@ function plugin(opts?: { out?: string; currentDir: string }) {
         promise = new Promise(async (resolve) => {
           let source = render(node.content);
 
+          // TODO: [refactor] check AST vars instead simple script check
+          const hasScript = node.content?.filter(
+            (child) => child.tag === "script"
+          )[0];
+
           // TODO: [refactor] use svelte compiler to walk and replace paths
           let imports: null | string[] = source.match(
             /(["'])(?:(?=(\\?))\2.)*?\1/g
@@ -66,51 +71,56 @@ function plugin(opts?: { out?: string; currentDir: string }) {
             return node;
           });
 
-          const bundle = await rollup.rollup({
-            input: "entry",
-            plugins: [
-              virtual({
-                entry: `
-                  import Component from "${pathToSvelteFile}";
-                  new Component({ target: document.body, hydrate: true });`,
-              }),
-              rollupSvelte({
-                css: false, // omit css from bundle because it's injected in the <head> element
-                hydratable: true,
-              }),
-              nodeResolve(),
-            ],
-          });
-
-          const output = await bundle.generate({});
-
+          let output: rollup.RollupOutput;
           let fileSrc = "";
 
-          if (opts?.out) {
-            const crypto = await import("crypto");
+          if (hasScript) {
+            const bundle = await rollup.rollup({
+              input: "entry",
+              plugins: [
+                virtual({
+                  entry: `
+                  import Component from "${pathToSvelteFile}";
+                  new Component({ target: document.body, hydrate: true });`,
+                }),
+                rollupSvelte({
+                  css: false, // omit css from bundle because it's injected in the <head> element
+                  hydratable: true,
+                }),
+                nodeResolve(),
+              ],
+            });
 
-            fileSrc = `src.${crypto
-              .createHash("md5")
-              .update(source)
-              .digest("hex")
-              .slice(0, 12)}.js`;
+            output = await bundle.generate({});
 
-            const terser = await import("terser");
+            if (opts?.out) {
+              const crypto = await import("crypto");
 
-            fs.writeFile(
-              path.join(opts?.out, fileSrc),
-              terser.minify(output.output[0].code).code,
-              () => {}
-            );
+              fileSrc = `src.${crypto
+                .createHash("md5")
+                .update(source)
+                .digest("hex")
+                .slice(0, 12)}.js`;
+
+              const terser = await import("terser");
+
+              fs.writeFile(
+                path.join(opts?.out, fileSrc),
+                terser.minify(output.output[0].code).code,
+                () => {}
+              );
+            }
           }
 
           tree.match({ tag: "svelte" }, (node) => {
-            // TODO: only attach JS if required (use AST to check vars)
+            let script = "";
 
-            let script = `<script>${output.output[0].code}</script>`;
+            if (hasScript) {
+              script = `<script>${output.output[0].code}</script>`;
 
-            if (opts?.out) {
-              script = `<script src="${fileSrc}"></script>`;
+              if (opts?.out) {
+                script = `<script src="${fileSrc}"></script>`;
+              }
             }
 
             node.content = (parse(
