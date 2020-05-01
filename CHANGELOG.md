@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Use AST to replace imports instead of RegEx
 
+## [0.4.5](https://github.com/metonym/posthtml-svelte/releases/tag/0.4.5) - 2020-05-01
+
+- Fix: filter out svelte tags if static
+
 ## [0.4.4](https://github.com/metonym/posthtml-svelte/releases/tag/0.4.4) - 2020-05-01
 
 - Fix: don't replace existing body content if static

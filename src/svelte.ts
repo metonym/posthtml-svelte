@@ -131,6 +131,9 @@ function plugin(opts?: { out?: string; currentDir: string; key?: string }) {
           } else {
             tree.match({ tag: "body" }, (node) => {
               if (node.content) {
+                node.content = node.content.filter(
+                  (child) => (child as PostHTML.Node).tag !== "svelte"
+                );
                 node.content.push((parse(html) as unknown) as PostHTML.Node);
               }
 
