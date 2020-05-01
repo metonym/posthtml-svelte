@@ -130,7 +130,10 @@ function plugin(opts?: { out?: string; currentDir: string; key?: string }) {
             });
           } else {
             tree.match({ tag: "body" }, (node) => {
-              node.content = (parse(html) as unknown) as PostHTML.Node[];
+              if (node.content) {
+                node.content.push((parse(html) as unknown) as PostHTML.Node);
+              }
+
               return (node.content as unknown) as PostHTML.Node;
             });
           }
