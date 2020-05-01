@@ -36,6 +36,7 @@ function plugin(opts?: { out?: string; currentDir: string }) {
 
           if (imports && opts?.currentDir) {
             imports
+              .filter((_) => _.includes(".svelte"))
               .map((_) => _.substr(1, _.length - 1))
               .forEach((partial) => {
                 const { dir } = path.parse(partial);

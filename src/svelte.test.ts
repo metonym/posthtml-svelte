@@ -4,7 +4,7 @@ import test from "tape";
 import { plugin } from "./svelte";
 import htmlnano from "htmlnano";
 
-test("plugin transforms svelte code into valid HTML and creates a separte JS file", async (t) => {
+test.only("plugin transforms svelte code into valid HTML and creates a separte JS file", async (t) => {
   const html = fs.readFileSync("src/__fixtures__/Count.html").toString();
   const result = await posthtml([
     plugin({
@@ -21,7 +21,7 @@ test("plugin transforms svelte code into valid HTML and creates a separte JS fil
   t.end();
 });
 
-test.only("no JS", async (t) => {
+test("no JS", async (t) => {
   const html = fs.readFileSync("src/__fixtures__/Static.html").toString();
   const result = await posthtml([
     plugin({
