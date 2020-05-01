@@ -11,6 +11,7 @@ test.only("plugin transforms svelte code into valid HTML and creates a separte J
       out: "src/__fixtures__/separate/",
       currentDir: "src/__fixtures__/",
     }),
+    // @ts-ignore
   ]).process(html, { recognizeSelfClosing: true });
 
   const minified = await htmlnano.process(result.html, {});

@@ -15,7 +15,7 @@ if (!fs.existsSync(cache)) {
   fs.mkdirSync(cache);
 }
 
-function plugin(opts?: { out?: string; currentDir: string }) {
+function plugin(opts?: { out?: string; currentDir: string; key?: string }) {
   return (tree: PostHTML.Node) => {
     return new Promise(async (resolve) => {
       let promise: undefined | Promise<void>;
@@ -49,7 +49,8 @@ function plugin(opts?: { out?: string; currentDir: string }) {
               });
           }
 
-          const pathToSvelteFile = path.resolve(cache, "Component.svelte");
+          const name = (opts?.key || "Component") + ".svelte";
+          const pathToSvelteFile = path.resolve(cache, name);
 
           fs.writeFileSync(pathToSvelteFile, source);
 
