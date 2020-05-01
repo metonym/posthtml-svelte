@@ -26,7 +26,7 @@ function plugin(opts?: { out?: string; currentDir: string }) {
 
           // TODO: [refactor] check AST vars instead simple script check
           const hasScript = node.content?.filter(
-            (child) => child.tag === "script"
+            (child) => (child as PostHTML.Node).tag === "script"
           )[0];
 
           // TODO: [refactor] use svelte compiler to walk and replace paths
