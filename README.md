@@ -11,8 +11,13 @@ This [PostHTML](https://github.com/posthtml/posthtml) plugin is a proof-of-conce
 <html>
   <body>
     <svelte>
-      <script>let count = 0;</script>
-      <button on:click="{() => { count++; }}">Increment the count: {count}</button>
+      <script>
+        let count = 0;
+      </script>
+
+      <button on:click="{() => { count++; }}">
+        Increment the count: {count}
+      </button>
     </svelte>
   </body>
 </html>
@@ -20,13 +25,13 @@ This [PostHTML](https://github.com/posthtml/posthtml) plugin is a proof-of-conce
 
 ## Steps
 
-1) Use PostHTML to extract Svelte code inside of a non-standard `svelte` tag
+1. Use PostHTML to extract Svelte code inside of a non-standard `svelte` tag
 
-2) Use the Svelte compiler to generate static markup and styles
+2. Use the Svelte compiler to generate static markup and styles
 
-3) Use Rollup to generate the JavaScript bundle that hydrates the HTML
+3. Use Rollup to generate the JavaScript bundle that hydrates the HTML
 
-4) Use PostHTML to inject the static markup and bundle into the HTML
+4. Use PostHTML to inject the static markup and bundle into the HTML
 
 ## Example
 
@@ -55,11 +60,13 @@ const { svelte } = require("posthtml-svelte");
 
 (async () => {
   const html = fs.readFileSync("./src/before.html");
-  const result = await posthtml([svelte({
-    out: 'src/processed', // if definied, JS will be generated/minified as a separate file
-    currentDir: 'src/', // folder relative to the working directory
-    key: '<hash>' // unique key for the Svelte component that is written to disk
-  })]).process(html);
+  const result = await posthtml([
+    svelte({
+      out: "src/processed", // if definied, JS will be generated/minified as a separate file
+      currentDir: "src/", // folder relative to the working directory
+      key: "<hash>", // unique key for the Svelte component that is written to disk
+    }),
+  ]).process(html);
 
   fs.writeFileSync("./src/processed/after.html", result.html);
 })();
