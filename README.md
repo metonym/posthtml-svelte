@@ -32,53 +32,6 @@ This [PostHTML](https://github.com/posthtml/posthtml) plugin is a proof-of-conce
 
 ### [Before](src/__fixtures__/Count.html)
 
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-  </head>
-  <body>
-    <svelte>
-      <script>
-        let count = 0;
-
-        $: list = Array.from({ length: count }, (_, i) => i)
-      </script>
-
-      <style>
-        h1 {
-          font-size: 2.5rem;
-          color: blue;
-        }
-      </style>
-
-      <svelte:head>
-        <title>Page title</title>
-      </svelte:head>
-
-      <button on:click="{() => { count++; }}">Increment</button>
-
-      <h1>Count: {count}</h1>
-
-      <ul>
-        Static, pre-rendered list
-        {#each [0, 1, 2] as item}
-          <li>{item}</li>
-        {/each}
-      </ul>
-
-      <ul>
-        Dynamic list
-        {#each list as item}
-          <li>{item}</li>
-        {/each}
-      </ul>
-    </svelte>
-  </body>
-</html>
-```
-
 ### [After](src/__fixtures__/Count.out.html)
 
 ## Install
@@ -101,37 +54,14 @@ const posthtml = require("posthtml");
 const { svelte } = require("posthtml-svelte");
 
 (async () => {
-  const html = fs.readFileSync("./before.html");
-  const result = await posthtml([svelte()]).process(html);
+  const html = fs.readFileSync("./src/before.html");
+  const result = await posthtml([svelte({
+    out: 'src/processed', // if definied, JS will be generated/minified as a separate file
+    currentDir: 'src/', // folder relative to the working directory
+    key: '<hash>' // unique key for the Svelte component that is written to disk
+  })]).process(html);
 
-  fs.writeFileSync("./after.html", result.html);
-})();
-```
-
-The plugin will create a folder called `.cache-posthtml-svelte`.
-
-You can add this to your `.gitignore`:
-
-```s
-/.cache*
-```
-
-### Separate JS file
-
-To separate the JS file bundled from the Svelte code, specify the folder for the JS file.
-
-[Example output: src/__fixtures__/separate](src/__fixtures__/separate)
-
-```js
-const fs = require("fs");
-const posthtml = require("posthtml");
-const { svelte } = require("posthtml-svelte");
-
-(async () => {
-  const html = fs.readFileSync("./before.html");
-  const result = await posthtml([svelte("dist")]).process(html);
-
-  fs.writeFileSync("./dist/after.html", result.html);
+  fs.writeFileSync("./src/processed/after.html", result.html);
 })();
 ```
 
