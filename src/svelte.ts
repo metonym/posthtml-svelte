@@ -51,7 +51,7 @@ function plugin(opts?: { out?: string; currentDir: string; key?: string }) {
               });
           }
 
-          const name = (opts?.key || "Component") + ".svelte";
+          const name = (opts?.key || new Date().toISOString()) + ".svelte";
           const pathToSvelteFile = path.resolve(cache, name);
 
           await writeFile(pathToSvelteFile, source);
