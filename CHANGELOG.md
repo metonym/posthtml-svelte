@@ -21,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Use `createHash` for default Component key
 
+## [0.4.7](https://github.com/metonym/posthtml-svelte/releases/tag/0.4.7) - 2020-05-03
+
+- Prepend markup to body
+
+- Promisify `fs.writeFile`
+
+- Use `Date()` for default Component key
+
 ## [0.4.6](https://github.com/metonym/posthtml-svelte/releases/tag/0.4.6) - 2020-05-02
 
 - Move `posthtml` to peer dependencies
