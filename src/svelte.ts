@@ -134,7 +134,7 @@ function plugin(opts?: { out?: string; currentDir: string; key?: string }) {
                 node.content = node.content.filter(
                   (child) => (child as PostHTML.Node).tag !== "svelte"
                 );
-                node.content.push((parse(html) as unknown) as PostHTML.Node);
+                node.content.unshift((parse(html) as unknown) as PostHTML.Node);
               }
 
               return (node.content as unknown) as PostHTML.Node;

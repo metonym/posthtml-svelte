@@ -3,7 +3,7 @@ import posthtml from "posthtml";
 import test from "tape";
 import { plugin } from "./svelte";
 
-test.only("plugin transforms svelte code into valid HTML and creates a separte JS file", async (t) => {
+test("plugin transforms svelte code into valid HTML and creates a separte JS file", async (t) => {
   const html = fs.readFileSync("src/__fixtures__/Count.html").toString();
   const result = await posthtml([
     plugin({
@@ -19,7 +19,7 @@ test.only("plugin transforms svelte code into valid HTML and creates a separte J
   t.end();
 });
 
-test("no JS", async (t) => {
+test.only("no JS", async (t) => {
   const html = fs.readFileSync("src/__fixtures__/Static.html").toString();
   const result = await posthtml([
     plugin({
