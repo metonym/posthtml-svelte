@@ -13,6 +13,7 @@
         import Header from "./Header.svelte";
 
         $: list = Array.from({ length: count }, (_, i) => i);
+        $: doubled = count * 2;
       </script>
 
       <style>
@@ -38,7 +39,7 @@
 
       <button on:click="{() => { count++; }}">Increment</button>
 
-      <h1>Count: {count}</h1>
+      <h1>Count: {count} {doubled}</h1>
 
       <ul>
         Static, pre-rendered list {#each [0, 1, 2] as item}

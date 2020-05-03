@@ -2,8 +2,10 @@ import fs from "fs";
 import posthtml from "posthtml";
 import test from "tape";
 import { plugin } from "./svelte";
+import { performance } from "perf_hooks";
 
-test("plugin transforms svelte code into valid HTML and creates a separte JS file", async (t) => {
+test.only("plugin transforms svelte code into valid HTML and creates a separte JS file", async (t) => {
+  const start = performance.now();
   const html = fs.readFileSync("src/__fixtures__/Count.html").toString();
   const result = await posthtml([
     plugin({
@@ -16,10 +18,11 @@ test("plugin transforms svelte code into valid HTML and creates a separte JS fil
   fs.writeFileSync("src/__fixtures__/separate/Count.out.html", result.html);
 
   t.ok(result.html);
+  console.log((performance.now() - start) / 1000);
   t.end();
 });
 
-test.only("no JS", async (t) => {
+test("no JS", async (t) => {
   const html = fs.readFileSync("src/__fixtures__/Static.html").toString();
   const result = await posthtml([
     plugin({

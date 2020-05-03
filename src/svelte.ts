@@ -5,10 +5,12 @@ import * as rollup from "rollup";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import rollupSvelte from "rollup-plugin-svelte";
 import virtual from "@rollup/plugin-virtual";
+import { promisify } from "util";
 import path from "path";
 import fs from "fs";
 import "svelte/register";
 
+const writeFile = promisify(fs.writeFile);
 const cache = path.join(__dirname, ".cache");
 
 if (!fs.existsSync(cache)) {
@@ -52,7 +54,7 @@ function plugin(opts?: { out?: string; currentDir: string; key?: string }) {
           const name = (opts?.key || "Component") + ".svelte";
           const pathToSvelteFile = path.resolve(cache, name);
 
-          fs.writeFileSync(pathToSvelteFile, source);
+          await writeFile(pathToSvelteFile, source);
 
           const Component = require(pathToSvelteFile).default;
           const { html, head, css } = Component.render();
